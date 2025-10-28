@@ -1,0 +1,1114 @@
+openapi: 3.0.4
+info:
+  title: Microservicio de Usuarios - Undersounds
+  description: |-
+    Especificacion OpenAPI del microservicio de "Usuarios" dentro del proyecto "Undersounds" de GPS/ASEE.
+
+    Este microservicio gestiona:
+    - Usuarios y tipos de usuario
+    - Listas de reproduccion personales
+    - Favoritos (canciones, albumes, artistas)
+    - Albumes deseados (wishlist)
+    - Posts en comunidades
+    - Historial de compras
+
+    El codigo del proyecto esta disponible en el [repositorio de GitHub](https://github.com/UniExtremadura/proyecto-gps-25-26-ga05).
+  version: 1.0.0
+
+paths:
+  # ========== USUARIOS ==========
+  /usuarios:
+    post:
+      summary: Registrar un nuevo usuario
+      tags:
+        - Usuarios
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UsuarioCreate"
+      responses:
+        "201":
+          description: Usuario registrado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Usuario"
+        "400":
+          description: Datos de entrada invalidos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    get:
+      summary: Buscar usuarios por nombre
+      tags:
+        - Usuarios
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Termino de busqueda para filtrar usuarios por nombre
+          example: "juan"
+      responses:
+        "200":
+          description: Lista de usuarios obtenida correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Usuario"
+        "400":
+          description: Parametros invalidos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /usuarios/{idUsuario}:
+    parameters:
+      - name: idUsuario
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: ID del usuario
+
+    get:
+      summary: Obtener los datos de un usuario por su ID
+      tags:
+        - Usuarios
+      responses:
+        "200":
+          description: Usuario obtenido correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Usuario"
+        "404":
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    patch:
+      summary: Modificar los datos de un usuario existente
+      tags:
+        - Usuarios
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UsuarioUpdate"
+      responses:
+        "200":
+          description: Usuario modificado con exito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Usuario"
+        "400":
+          description: Datos de entrada invalidos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: Eliminar un usuario por su ID
+      tags:
+        - Usuarios
+      responses:
+        "204":
+          description: Usuario eliminado correctamente
+        "404":
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  # ========== LISTAS DE REPRODUCCION ==========
+  /usuarios/{idUsuario}/listas:
+    parameters:
+      - name: idUsuario
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    get:
+      summary: Obtener todas las listas de reproduccion de un usuario
+      tags:
+        - Listas de Reproduccion
+      responses:
+        "200":
+          description: Listas obtenidas correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lista"
+        "404":
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      summary: Crear una nueva lista de reproduccion
+      tags:
+        - Listas de Reproduccion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListaCreate"
+      responses:
+        "201":
+          description: Lista creada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lista"
+        "400":
+          description: Datos invalidos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /listas/{idLista}:
+    parameters:
+      - name: idLista
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    get:
+      summary: Obtener detalles de una lista de reproduccion
+      tags:
+        - Listas de Reproduccion
+      responses:
+        "200":
+          description: Lista obtenida correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListaDetalle"
+        "404":
+          description: Lista no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    patch:
+      summary: Modificar una lista de reproducción
+      tags:
+        - Listas de Reproduccion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListaUpdate"
+      responses:
+        "200":
+          description: Lista modificada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lista"
+        "404":
+          description: Lista no encontrada
+        "400":
+          description: Datos inválidos
+
+    delete:
+      summary: Eliminar una lista de reproduccion
+      tags:
+        - Listas de Reproduccion
+      responses:
+        "204":
+          description: Lista eliminada correctamente
+        "404":
+          description: Lista no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /listas/{idLista}/canciones/{idCancion}:
+    parameters:
+      - name: idLista
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: idCancion
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    post:
+      summary: Añadir una cancion a una lista de reproduccion
+      tags:
+        - Listas de Reproduccion
+      responses:
+        "201":
+          description: Cancion añadida a la lista
+        "404":
+          description: Lista o cancion no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: La cancion ya esta en la lista
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: Eliminar una cancion de una lista de reproduccion
+      tags:
+        - Listas de Reproduccion
+      responses:
+        "204":
+          description: Cancion eliminada de la lista
+        "404":
+          description: Lista o cancion no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  # ========== FAVORITOS ==========
+  /usuarios/{idUsuario}/favoritos/canciones:
+    parameters:
+      - name: idUsuario
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    get:
+      summary: Obtener todas las canciones favoritas de un usuario
+      tags:
+        - Favoritos
+      responses:
+        "200":
+          description: Lista de canciones favoritas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    idCancion:
+                      type: integer
+        "404":
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /usuarios/{idUsuario}/favoritos/canciones/{idCancion}:
+    parameters:
+      - name: idUsuario
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: idCancion
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    post:
+      summary: Añadir una cancion a favoritos
+      tags:
+        - Favoritos
+      responses:
+        "201":
+          description: Cancion añadida a favoritos
+        "404":
+          description: Usuario o cancion no encontrados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: La cancion ya esta en favoritos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: Eliminar una cancion de favoritos
+      tags:
+        - Favoritos
+      responses:
+        "204":
+          description: Cancion eliminada de favoritos
+        "404":
+          description: Usuario o cancion no encontrados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /usuarios/{idUsuario}/favoritos/albums:
+    parameters:
+      - name: idUsuario
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    get:
+      summary: Obtener todos los albumes favoritos de un usuario
+      tags:
+        - Favoritos
+      responses:
+        "200":
+          description: Lista de albumes favoritos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    idAlbum:
+                      type: integer
+        "404":
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /usuarios/{idUsuario}/favoritos/albums/{idAlbum}:
+    parameters:
+      - name: idUsuario
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: idAlbum
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    post:
+      summary: Añadir un album a favoritos
+      tags:
+        - Favoritos
+      responses:
+        "201":
+          description: Album añadido a favoritos
+        "404":
+          description: Usuario o album no encontrados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: El album ya esta en favoritos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: Eliminar un album de favoritos
+      tags:
+        - Favoritos
+      responses:
+        "204":
+          description: Album eliminado de favoritos
+        "404":
+          description: Usuario o album no encontrados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /usuarios/{idUsuario}/favoritos/artistas:
+    parameters:
+      - name: idUsuario
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    get:
+      summary: Obtener todos los artistas favoritos de un usuario
+      tags:
+        - Favoritos
+      responses:
+        "200":
+          description: Lista de artistas favoritos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    idArtista:
+                      type: integer
+        "404":
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /usuarios/{idUsuario}/favoritos/artistas/{idArtista}:
+    parameters:
+      - name: idUsuario
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: idArtista
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    post:
+      summary: Añadir un artista a favoritos
+      tags:
+        - Favoritos
+      responses:
+        "201":
+          description: Artista añadido a favoritos
+        "404":
+          description: Usuario o artista no encontrados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: El artista ya esta en favoritos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: Eliminar un artista de favoritos
+      tags:
+        - Favoritos
+      responses:
+        "204":
+          description: Artista eliminado de favoritos
+        "404":
+          description: Usuario o artista no encontrados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  # ========== ALBUMES DESEADOS ==========
+  /usuarios/{idUsuario}/deseos/albums:
+    parameters:
+      - name: idUsuario
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    get:
+      summary: Obtener lista de albumes deseados (wishlist)
+      tags:
+        - Albumes Deseados
+      responses:
+        "200":
+          description: Lista de albumes deseados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    idAlbum:
+                      type: integer
+        "404":
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /usuarios/{idUsuario}/deseos/albums/{idAlbum}:
+    parameters:
+      - name: idUsuario
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: idAlbum
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    post:
+      summary: Añadir un album a la lista de deseos
+      tags:
+        - Albumes Deseados
+      responses:
+        "201":
+          description: Album añadido a la lista de deseos
+        "404":
+          description: Usuario o album no encontrados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: El album ya esta en la lista de deseos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: Eliminar un album de la lista de deseos
+      tags:
+        - Albumes Deseados
+      responses:
+        "204":
+          description: Album eliminado de la lista de deseos
+        "404":
+          description: Usuario o album no encontrados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  # ========== COMPRAS ==========
+  /usuarios/{idUsuario}/compras:
+    parameters:
+      - name: idUsuario
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    get:
+      summary: Obtener historial de compras de un usuario
+      tags:
+        - Compras
+      responses:
+        "200":
+          description: Historial de compras obtenido
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Compra"
+        "404":
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /usuarios/{idUsuario}/compras/{idMerch}:
+    parameters:
+      - name: idUsuario
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: idMerch
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    post:
+      summary: Registrar una compra de merchandising
+      tags:
+        - Compras
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompraCreate"
+      responses:
+        "201":
+          description: Compra realizada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Compra"
+        "400":
+          description: Datos invalidos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Usuario o producto no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  # ========== POSTS DE COMUNIDAD ==========
+  /comunidades/{idComunidad}/posts:
+    parameters:
+      - name: idComunidad
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    get:
+      summary: Obtener posts de una comunidad
+      tags:
+        - Posts de Comunidad
+      responses:
+        "200":
+          description: Lista de posts obtenida
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+        "404":
+          description: Comunidad no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      summary: Crear un nuevo post en una comunidad
+      tags:
+        - Posts de Comunidad
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostCreate"
+      responses:
+        "201":
+          description: Post creado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "400":
+          description: Datos invalidos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Comunidad no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /posts/{idPost}:
+    parameters:
+      - name: idPost
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    get:
+      summary: Obtener detalles de un post
+      tags:
+        - Posts de Comunidad
+      responses:
+        "200":
+          description: Post obtenido correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "404":
+          description: Post no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    patch:
+      summary: Modificar un post
+      tags:
+        - Posts de Comunidad
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostUpdate"
+      responses:
+        "200":
+          description: Post modificado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "404":
+          description: Post no encontrado
+        "400":
+          description: Datos inválidos
+
+    delete:
+      summary: Eliminar un post
+      tags:
+        - Posts de Comunidad
+      responses:
+        "204":
+          description: Post eliminado correctamente
+        "404":
+          description: Post no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /posts/{idPost}/respuestas:
+    parameters:
+      - name: idPost
+        in: path
+        required: true
+        schema:
+          type: integer
+
+    get:
+      summary: Obtener respuestas a un post
+      tags:
+        - Posts de Comunidad
+      responses:
+        "200":
+          description: Lista de respuestas obtenida
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+        "404":
+          description: Post no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+# ========== COMPONENTES REUTILIZABLES ==========
+components:
+  schemas:
+    # Usuario
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        nombre:
+          type: string
+          example: "Juan Perez"
+        correo:
+          type: string
+          format: email
+          example: "juan@example.com"
+        direccion:
+          type: string
+          example: "Calle Mayor 123, Caceres"
+        telefono:
+          type: string
+          example: "+34612345678"
+        descripcion:
+          type: string
+          example: "Amante de la musica indie y rock alternativo"
+        urlImagen:
+          type: string
+          format: uri
+          example: "https://example.com/avatars/juan.jpg"
+        tipo:
+          type: integer
+          description: ID del tipo de usuario (FK a tipoUsuario)
+          example: 2
+      required:
+        - id
+        - nombre
+        - correo
+        - tipo
+
+    UsuarioCreate:
+      type: object
+      properties:
+        nombre:
+          type: string
+          example: "Juan Perez"
+        correo:
+          type: string
+          format: email
+          example: "juan@example.com"
+        contrasena:
+          type: string
+          format: password
+          writeOnly: true
+          example: "miPassword123"
+        direccion:
+          type: string
+          example: "Calle Mayor 123, Caceres"
+        telefono:
+          type: string
+          example: "+34612345678"
+        descripcion:
+          type: string
+          example: "Amante de la musica indie"
+        urlImagen:
+          type: string
+          format: uri
+          example: "https://example.com/avatars/juan.jpg"
+        tipo:
+          type: integer
+          description: ID del tipo de usuario
+          example: 1
+      required:
+        - nombre
+        - correo
+        - contrasena
+        - tipo
+
+    UsuarioUpdate:
+      type: object
+      properties:
+        nombre:
+          type: string
+        correo:
+          type: string
+          format: email
+        contrasena:
+          type: string
+          format: password
+          writeOnly: true
+        direccion:
+          type: string
+        telefono:
+          type: string
+        descripcion:
+          type: string
+        urlImagen:
+          type: string
+          format: uri
+
+    # Lista de reproduccion
+    Lista:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        nombre:
+          type: string
+          example: "Mis favoritas 2024"
+        urlImagen:
+          type: string
+          format: uri
+          example: "https://example.com/playlists/cover1.jpg"
+        idUsuario:
+          type: integer
+          example: 1
+      required:
+        - id
+        - nombre
+        - idUsuario
+
+    ListaCreate:
+      type: object
+      properties:
+        nombre:
+          type: string
+          example: "Mis favoritas 2024"
+        urlImagen:
+          type: string
+          format: uri
+          example: "https://example.com/playlists/cover1.jpg"
+      required:
+        - nombre
+
+    ListaUpdate:
+      type: object
+      properties:
+        nombre:
+          type: string
+        urlImagen:
+          type: string
+          format: uri
+
+    ListaDetalle:
+      allOf:
+        - $ref: "#/components/schemas/Lista"
+        - type: object
+          properties:
+            canciones:
+              type: array
+              items:
+                type: object
+                properties:
+                  idCancion:
+                    type: integer
+
+    # Compra
+    Compra:
+      type: object
+      properties:
+        idUsuario:
+          type: integer
+          example: 1
+        idMerch:
+          type: integer
+          example: 5
+        fechaCompra:
+          type: string
+          format: date-time
+          example: "2024-10-01T14:30:00Z"
+        cantidad:
+          type: integer
+          example: 2
+        precioTotal:
+          type: number
+          format: float
+          example: 49.99
+      required:
+        - idUsuario
+        - idMerch
+        - cantidad
+
+    CompraCreate:
+      type: object
+      properties:
+        cantidad:
+          type: integer
+          minimum: 1
+          example: 2
+      required:
+        - cantidad
+
+    # Post de comunidad
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        comentario:
+          type: string
+          example: "¡Increible concierto de anoche!"
+        postPadre:
+          type: integer
+          nullable: true
+          description: ID del post padre si es una respuesta
+          example: null
+        idUsuario:
+          type: integer
+          example: 1
+        idComunidad:
+          type: integer
+          example: 3
+        fechaCreacion:
+          type: string
+          format: date-time
+          readOnly: true
+          example: "2024-10-06T12:00:00Z"
+      required:
+        - id
+        - comentario
+        - idUsuario
+        - idComunidad
+
+    PostCreate:
+      type: object
+      properties:
+        comentario:
+          type: string
+          example: "¡Increible concierto de anoche!"
+        postPadre:
+          type: integer
+          nullable: true
+          description: ID del post padre si es una respuesta
+          example: null
+        idUsuario:
+          type: integer
+          example: 1
+      required:
+        - comentario
+        - idUsuario
+
+    PostUpdate:
+      type: object
+      properties:
+        comentario:
+          type: string
+          example: "¡Increible concierto de anoche! (editado)"
+      required:
+        - comentario
+
+    # Error
+    Error:
+      type: object
+      properties:
+        codigo:
+          type: integer
+          example: 404
+        mensaje:
+          type: string
+          example: "Recurso no encontrado"
+      required:
+        - codigo
+        - mensaje
