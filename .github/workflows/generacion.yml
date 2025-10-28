@@ -1,0 +1,30 @@
+name: Tercer workflow
+on:
+  push:
+
+jobs:
+  generar-codigo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+        
+      - name: Configuración para usar la version 17 de Java
+        uses: actions/setup-java@v3
+        with:
+            java-version: '17'
+            distribution: 'temurin'
+              
+      - name: Generador de código openapi
+        run: java -jar openapi-generator-cli.jar generate -i api.yaml -g python-flask -o ./openapi_server
+      
+      - name: Compresión del directorio generado
+        run: zip -r openapi_server.zip openapi_server
+
+      - name: Descargar fichero comprimido
+        uses: actions/upload-artifact@v4
+        with:
+            name: openapi_server
+            path: openapi_server.zip
+        
+  
